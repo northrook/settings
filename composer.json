@@ -1,0 +1,27 @@
+{
+  "name": "northrook/settings",
+  "description": "Lightweight PHP package for persistent settings, globally available using dot notation.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Northrook\\": "src"
+    }
+  },
+  "authors": [
+    {
+      "name": "Martin",
+      "email": "mn@northrook.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.2",
+    "psr/log": "@stable",
+    "northrook/functions": "dev-main"
+  },
+  "require-dev": {
+    "northrook/dev-env": "dev-main"
+  }
+}
