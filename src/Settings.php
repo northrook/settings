@@ -6,9 +6,11 @@ namespace Northrook;
 
 use Northrook\Logger\Log;
 use Northrook\Settings\AbstractSettings;
+use Northrook\Settings\SettingsInterface;
 use Psr\Log\LoggerInterface;
 
-final class Settings extends AbstractSettings
+
+final class Settings extends AbstractSettings implements SettingsInterface
 {
 
     // NOTE: Auto-generation only occurs on missing values
@@ -49,7 +51,7 @@ final class Settings extends AbstractSettings
         );
     }
 
-    public function inject( array $settings, array | bool $lock = false ) : self {
+    public function injectSettings( array $settings, bool $lock = false ) : self {
         if ( $lock ) {
             $this->locked = [ ...$this->locked, ...\array_keys( $settings ) ];
         }

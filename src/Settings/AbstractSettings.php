@@ -9,12 +9,9 @@ use Closure;
 abstract class AbstractSettings
 {
     private static self $instance;
-
     /** @var bool Whether the entire {@see static::$settings} array is locked. */
     protected readonly bool $frozen;
-
-    protected array $locked = [];
-
+    protected array         $locked = [];
     /** @var SettingsMap Stores the settings, accessible via dot notation syntax */
     protected readonly SettingsMap $settings;
 
@@ -51,7 +48,7 @@ abstract class AbstractSettings
      * @return bool `true` if added, `false` if the setting exists
      */
     final public static function add( string | array $setting, mixed $value = null ) : bool {
-        return static::instance()->add( $setting, $value );
+        return static::instance()->addSetting( $setting, $value );
     }
 
     /**
@@ -61,7 +58,7 @@ abstract class AbstractSettings
      * @return bool `true` if added, `false` if locked
      */
     final public static function set( string | array $setting, mixed $value = null ) : bool {
-        return static::instance()->set( $setting, $value );
+        return static::instance()->setSetting( $setting, $value );
     }
 
     /**
@@ -69,12 +66,12 @@ abstract class AbstractSettings
      *
      * @return mixed Returns null on invalid $setting by default
      */
-    final public static function get( string $setting ) : mixed {
+    final public static function get( string | array $setting ) : mixed {
         return static::instance()->getSetting( $setting );
     }
 
 
-    public function addSetting( string $setting, mixed $value ) : bool {
+    public function addSetting( string | array $setting, mixed $value = null ) : bool {
 
         if ( $this->isLocked( $setting ) || $this->settings->has( $setting ) ) {
             return false;
@@ -89,11 +86,12 @@ abstract class AbstractSettings
         return true;
     }
 
-    public function setSetting( string $setting, mixed $value ) : bool {
+    public function setSetting( string | array $setting, mixed $value = null ) : bool {
 
         if ( $this->isLocked( $setting ) ) {
             return false;
         };
+
 
         $this->settings->set( $setting, $value );
 
@@ -117,13 +115,15 @@ abstract class AbstractSettings
         return $this->frozen ?? false;
     }
 
-    final protected function isLocked( string $key ) : bool {
-        if ( \in_array( $key, $this->locked ) ) {
-            return $this->throwOnError
-                ? throw new \ValueError(
-                    "The setting '{$key}' is frozen, and cannot be set or modified at runtime.",
-                )
-                : true;
+    final protected function isLocked( string | array $setting ) : bool {
+        foreach ( (array ) $setting as $key ) {
+            if ( \in_array( $key, $this->locked ) ) {
+                return $this->throwOnError
+                    ? throw new \ValueError(
+                        "The setting '{$key}' is frozen, and cannot be set or modified at runtime.",
+                    )
+                    : true;
+            }
         }
         return false;
     }
