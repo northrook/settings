@@ -19,7 +19,8 @@
   "require": {
     "php": ">=8.2",
     "psr/log": "@stable",
-    "northrook/functions": "dev-main"
+    "northrook/functions": "dev-main",
+    "northrook/array-access": "dev-main"
   },
   "require-dev": {
     "northrook/dev-env": "dev-main"

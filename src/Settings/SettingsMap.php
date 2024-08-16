@@ -4,9 +4,9 @@ declare( strict_types = 1 );
 
 namespace Northrook\Settings;
 
-use Northrook\DotProperties;
+use Northrook\ArrayAccessor;
 
-final class SettingsMap extends DotProperties
+final class SettingsMap extends ArrayAccessor
 {
 
 }
