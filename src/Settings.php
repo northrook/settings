@@ -15,16 +15,20 @@ final class Settings extends AbstractSettings implements SettingsInterface
 
     // NOTE: Auto-generation only occurs on missing values
     private const DEFAULTS = [
-        'dir.root'              => null, // auto-generate - ./
-        'dir.var'               => null, // auto-generate - ./var
-        'dir.cache'             => null, // auto-generate - ./var/cache
-        'dir.storage'           => null, // auto-generate - ./storage
-        'dir.uploads'           => null, // auto-generate - ./storage/uploads
-        'dir.assets'            => null, // auto-generate - ./assets
-        'dir.public'            => null, // auto-generate - ./public
-        'dir.public.assets'     => null, // auto-generate - ./public/assets
-        'dir.public.uploads'    => null, // auto-generate - ./public/uploads
-        'unusual.default.value' => 'dingleberries',
+        'charset'                 => 'UTF-8',
+        'language'                => null,
+        'language.locale'         => 'en',
+        'language.locale.listAll' => [],
+        'dir.root'                => null, // auto-generate - ./
+        'dir.var'                 => null, // auto-generate - ./var
+        'dir.cache'               => null, // auto-generate - ./var/cache
+        'dir.storage'             => null, // auto-generate - ./storage
+        'dir.uploads'             => null, // auto-generate - ./storage/uploads
+        'dir.assets'              => null, // auto-generate - ./assets
+        'dir.public'              => null, // auto-generate - ./public
+        'dir.public.assets'       => null, // auto-generate - ./public/assets
+        'dir.public.uploads'      => null, // auto-generate - ./public/uploads
+        'unusual.default.value'   => 'dingleberries',
     ];
 
     private const GENERATE_PATH = [
@@ -45,13 +49,15 @@ final class Settings extends AbstractSettings implements SettingsInterface
         ?bool                             $freeze = null,
         bool                              $throwOnError = false,
         private readonly ?LoggerInterface $logger = null,
-    ) {
+    )
+    {
         parent::__construct(
             $settings, $lockInjected, $freeze, $throwOnError,
         );
     }
 
-    public function injectSettings( array $settings, bool $lock = false ) : self {
+    public function injectSettings( array $settings, bool $lock = false ) : self
+    {
         if ( $lock ) {
             $this->locked = [ ...$this->locked, ...\array_keys( $settings ) ];
         }
@@ -59,7 +65,8 @@ final class Settings extends AbstractSettings implements SettingsInterface
         return $this;
     }
 
-    public function getSetting( string | array $setting ) : mixed {
+    public function getSetting( string | array $setting ) : mixed
+    {
         Log::info( 'Requested setting: ' . $setting );
         $get = parent::getSetting( $setting )
                ?? $this->generate( $setting )
@@ -69,10 +76,18 @@ final class Settings extends AbstractSettings implements SettingsInterface
         return $get;
     }
 
-    private function generate( string $setting ) : mixed {
+    private function generate( string $setting ) : mixed
+    {
+        if ( $setting === 'language' ) {
 
-        if ( \array_key_exists( $setting, self::GENERATE_PATH ) ) {
-
+            if ( $this->isFrozen() ) {
+                return self::DEFAULTS['language.locale'];
+            }
+            else {
+                $this->settings->set( $setting, self::DEFAULTS['language.locale'] );
+            }
+        }
+        elseif ( \array_key_exists( $setting, self::GENERATE_PATH ) ) {
             $generated = normalizePath(
                 [
                     $this->settings->get( 'dir.root' ) ?? getProjectRootDirectory(),
