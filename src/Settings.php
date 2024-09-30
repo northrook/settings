@@ -8,13 +8,14 @@ use Northrook\Logger\Log;
 use Northrook\Settings\AbstractSettings;
 use Northrook\Settings\SettingsInterface;
 use Psr\Log\LoggerInterface;
-
+use function String\normalizePath;
+use function Support\getProjectRootDirectory;
 
 final class Settings extends AbstractSettings implements SettingsInterface
 {
 
     // NOTE: Auto-generation only occurs on missing values
-    private const DEFAULTS = [
+    private const array DEFAULTS = [
         'charset'                 => 'UTF-8',
         'language'                => null,
         'language.locale'         => 'en',
@@ -28,10 +29,9 @@ final class Settings extends AbstractSettings implements SettingsInterface
         'dir.public'              => null, // auto-generate - ./public
         'dir.public.assets'       => null, // auto-generate - ./public/assets
         'dir.public.uploads'      => null, // auto-generate - ./public/uploads
-        'unusual.default.value'   => 'dingleberries',
     ];
 
-    private const GENERATE_PATH = [
+    private const array GENERATE_PATH = [
         'dir.root'           => null,
         'dir.var'            => '/var',
         'dir.cache'          => '/var/cache',
