@@ -8,7 +8,7 @@ use Northrook\Logger\Log;
 use Northrook\Settings\AbstractSettings;
 use Northrook\Settings\SettingsInterface;
 use Psr\Log\LoggerInterface;
-use function String\normalizePath;
+use Support\Normalize;
 use function Support\getProjectRootDirectory;
 
 final class Settings extends AbstractSettings implements SettingsInterface
@@ -88,7 +88,7 @@ final class Settings extends AbstractSettings implements SettingsInterface
             }
         }
         elseif ( \array_key_exists( $setting, self::GENERATE_PATH ) ) {
-            $generated = normalizePath(
+            $generated = Normalize::path(
                 [
                     $this->settings->get( 'dir.root' ) ?? getProjectRootDirectory(),
                     $this::GENERATE_PATH[ $setting ],
