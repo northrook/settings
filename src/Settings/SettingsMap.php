@@ -2,7 +2,7 @@
 
 declare( strict_types = 1 );
 
-namespace Northrook\Settings;
+namespace Core\Settings;
 
 use Northrook\ArrayAccessor;
 

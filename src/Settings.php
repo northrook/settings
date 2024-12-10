@@ -2,57 +2,57 @@
 
 declare( strict_types = 1 );
 
-namespace Northrook;
+namespace Core;
 
+use Core\Settings\AbstractSettings;
 use Northrook\Logger\Log;
-use Northrook\Settings\AbstractSettings;
-use Northrook\Settings\SettingsInterface;
+use Core\SettingsInterface;
 use Psr\Log\LoggerInterface;
 use Support\Normalize;
 use function Support\getProjectRootDirectory;
 
-final class Settings extends AbstractSettings implements SettingsInterface
+final class Settings implements SettingsInterface
 {
 
     // NOTE: Auto-generation only occurs on missing values
     private const array DEFAULTS = [
-        'charset'                 => 'UTF-8',
-        'language'                => null,
-        'language.locale'         => 'en',
-        'language.locale.listAll' => [],
-        'dir.root'                => null, // auto-generate - ./
-        'dir.var'                 => null, // auto-generate - ./var
-        'dir.cache'               => null, // auto-generate - ./var/cache
-        'dir.storage'             => null, // auto-generate - ./storage
-        'dir.uploads'             => null, // auto-generate - ./storage/uploads
-        'dir.assets'              => null, // auto-generate - ./assets
-        'dir.public'              => null, // auto-generate - ./public
-        'dir.public.assets'       => null, // auto-generate - ./public/assets
-        'dir.public.uploads'      => null, // auto-generate - ./public/uploads
+            'charset'                 => 'UTF-8',
+            'language'                => null,
+            'language.locale'         => 'en',
+            'language.locale.listAll' => [],
+            'dir.root'                => null, // auto-generate - ./
+            'dir.var'                 => null, // auto-generate - ./var
+            'dir.cache'               => null, // auto-generate - ./var/cache
+            'dir.storage'             => null, // auto-generate - ./storage
+            'dir.uploads'             => null, // auto-generate - ./storage/uploads
+            'dir.assets'              => null, // auto-generate - ./assets
+            'dir.public'              => null, // auto-generate - ./public
+            'dir.public.assets'       => null, // auto-generate - ./public/assets
+            'dir.public.uploads'      => null, // auto-generate - ./public/uploads
     ];
 
     private const array GENERATE_PATH = [
-        'dir.root'           => null,
-        'dir.var'            => '/var',
-        'dir.cache'          => '/var/cache',
-        'dir.storage'        => '/storage',
-        'dir.uploads'        => '/storage/uploads',
-        'dir.assets'         => '/assets',
-        'dir.public'         => '/public',
-        'dir.public.assets'  => '/public/assets',
-        'dir.public.uploads' => '/public/uploads',
+            'dir.root'           => null,
+            'dir.var'            => '/var',
+            'dir.cache'          => '/var/cache',
+            'dir.storage'        => '/storage',
+            'dir.uploads'        => '/storage/uploads',
+            'dir.assets'         => '/assets',
+            'dir.public'         => '/public',
+            'dir.public.assets'  => '/public/assets',
+            'dir.public.uploads' => '/public/uploads',
     ];
 
     public function __construct(
-        array                             $settings = [],
-        bool                              $lockInjected = false,
-        ?bool                             $freeze = null,
-        bool                              $throwOnError = false,
-        private readonly ?LoggerInterface $logger = null,
+            array                             $settings = [],
+            bool                              $lockInjected = false,
+            ?bool                             $freeze = null,
+            bool                              $throwOnError = false,
+            private readonly ?LoggerInterface $logger = null,
     )
     {
         parent::__construct(
-            $settings, $lockInjected, $freeze, $throwOnError,
+                $settings, $lockInjected, $freeze, $throwOnError,
         );
     }
 
@@ -79,25 +79,24 @@ final class Settings extends AbstractSettings implements SettingsInterface
     private function generate( string $setting ) : mixed
     {
         if ( $setting === 'language' ) {
-
             if ( $this->isFrozen() ) {
-                return self::DEFAULTS['language.locale'];
+                return self::DEFAULTS[ 'language.locale' ];
             }
             else {
-                $this->settings->set( $setting, self::DEFAULTS['language.locale'] );
+                $this->settings->set( $setting, self::DEFAULTS[ 'language.locale' ] );
             }
         }
         elseif ( \array_key_exists( $setting, self::GENERATE_PATH ) ) {
             $generated = Normalize::path(
-                [
-                    $this->settings->get( 'dir.root' ) ?? getProjectRootDirectory(),
-                    $this::GENERATE_PATH[ $setting ],
-                ],
+                    [
+                            $this->settings->get( 'dir.root' ) ?? getProjectRootDirectory(),
+                            $this::GENERATE_PATH[ $setting ],
+                    ],
             );
 
             $this->logger?->notice(
-                "Generated {setting}: {result}",
-                [ 'setting' => $setting, 'result' => $generated, ],
+                    "Generated {setting}: {result}",
+                    [ 'setting' => $setting, 'result' => $generated, ],
             );
 
             if ( $this->isFrozen() ) {

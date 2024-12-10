@@ -2,9 +2,10 @@
 
 declare( strict_types = 1 );
 
-namespace Northrook\Settings;
+namespace Core\Settings;
 
 use Closure;
+use Northrook\Settings\SettingsMap;
 
 abstract class AbstractSettings
 {
