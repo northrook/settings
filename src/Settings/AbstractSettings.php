@@ -5,7 +5,7 @@ declare( strict_types = 1 );
 namespace Core\Settings;
 
 use Closure;
-use Northrook\Settings\SettingsMap;
+use Core\Settings\SettingsMap;
 
 abstract class AbstractSettings
 {
@@ -20,13 +20,13 @@ abstract class AbstractSettings
      * @param array  $settings  Initial defaults
      */
     public function __construct(
-        array                   $settings = [],
-        bool                    $lockInjected = false,
-        ?bool                   $freeze = null,
-        protected readonly bool $throwOnError = false,
-    ) {
+            array                   $settings = [],
+            bool                    $lockInjected = false,
+            ?bool                   $freeze = null,
+            protected readonly bool $throwOnError = false,
+    )
+    {
         $this->settings = new SettingsMap( $settings, true );
-
 
         if ( $lockInjected ) {
             $this->locked = [ ...\array_keys( $settings ) ];
@@ -48,7 +48,8 @@ abstract class AbstractSettings
      *
      * @return bool `true` if added, `false` if the setting exists
      */
-    final public static function add( string | array $setting, mixed $value = null ) : bool {
+    final public static function add( string | array $setting, mixed $value = null ) : bool
+    {
         return static::instance()->addSetting( $setting, $value );
     }
 
@@ -58,7 +59,8 @@ abstract class AbstractSettings
      *
      * @return bool `true` if added, `false` if locked
      */
-    final public static function set( string | array $setting, mixed $value = null ) : bool {
+    final public static function set( string | array $setting, mixed $value = null ) : bool
+    {
         return static::instance()->setSetting( $setting, $value );
     }
 
@@ -67,13 +69,13 @@ abstract class AbstractSettings
      *
      * @return mixed Returns null on invalid $setting by default
      */
-    final public static function get( string | array $setting ) : mixed {
+    final public static function get( string | array $setting ) : mixed
+    {
         return static::instance()->getSetting( $setting );
     }
 
-
-    public function addSetting( string | array $setting, mixed $value = null ) : bool {
-
+    public function addSetting( string | array $setting, mixed $value = null ) : bool
+    {
         if ( $this->isLocked( $setting ) || $this->settings->has( $setting ) ) {
             return false;
         }
@@ -87,20 +89,19 @@ abstract class AbstractSettings
         return true;
     }
 
-    public function setSetting( string | array $setting, mixed $value = null ) : bool {
-
+    public function setSetting( string | array $setting, mixed $value = null ) : bool
+    {
         if ( $this->isLocked( $setting ) ) {
             return false;
         };
-
 
         $this->settings->set( $setting, $value );
 
         return true;
     }
 
-    public function getSetting( string | array $setting ) : mixed {
-
+    public function getSetting( string | array $setting ) : mixed
+    {
         if ( \is_array( $setting ) ) {
             $settings = [];
             foreach ( $setting as $key ) {
@@ -112,31 +113,34 @@ abstract class AbstractSettings
         return $this->settings->get( $setting );
     }
 
-    final public function isFrozen() : bool {
+    final public function isFrozen() : bool
+    {
         return $this->frozen ?? false;
     }
 
-    final protected function isLocked( string | array $setting ) : bool {
+    final protected function isLocked( string | array $setting ) : bool
+    {
         foreach ( (array ) $setting as $key ) {
             if ( \in_array( $key, $this->locked ) ) {
                 return $this->throwOnError
-                    ? throw new \ValueError(
-                        "The setting '{$key}' is frozen, and cannot be set or modified at runtime.",
-                    )
-                    : true;
+                        ? throw new \ValueError(
+                                "The setting '{$key}' is frozen, and cannot be set or modified at runtime.",
+                        )
+                        : true;
             }
         }
         return false;
     }
 
-
     // :::: Static Class ::::::::::::
 
-    final protected static function instance() : self {
+    final protected static function instance() : self
+    {
         return self::$instance ??= new static();
     }
 
-    final protected static function settings() : SettingsMap {
+    final protected static function settings() : SettingsMap
+    {
         return static::instance()->settings;
     }
 
