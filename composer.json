@@ -18,11 +18,10 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.3",
-    "psr/log": "@stable",
-    "northrook/support": "dev-main",
+    "northrook/core": "dev-main",
     "northrook/array-access": "dev-main"
   },
   "require-dev": {
-    "northrook/dev-env": "dev-main"
+    "northrook/dev": "dev-main"
   }
 }

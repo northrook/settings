@@ -10,6 +10,7 @@
 /*.lock
 /*.css
 /index.php
+/defaults.php
 package-lock.json
 
 ### Symfony
