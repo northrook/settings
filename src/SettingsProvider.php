@@ -138,6 +138,6 @@ final class SettingsProvider implements SettingsProviderInterface
 
     private function validateKey( string $key ) : bool
     {
-        return \ctype_alnum( \str_replace( ['.', '_'], '', $key ) ) && $key === \strtolower( $key );
+        return \ctype_alnum( \str_replace( ['.', '_'], '', $key ) );
     }
 }
