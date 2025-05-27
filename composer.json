@@ -2,7 +2,7 @@
   "name": "northrook/settings",
   "description": "Lightweight PHP package for persistent settings, globally available using dot notation.",
   "type": "library",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "autoload": {
     "psr-4": {
       "Core\\": "src"
