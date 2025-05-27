@@ -18,8 +18,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.3",
-    "northrook/core": "dev-main",
-    "northrook/array-access": "dev-main"
+    "northrook/core": "dev-main"
   },
   "require-dev": {
     "northrook/dev": "dev-main"

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Core\Settings;
 
-use Northrook\Dot;
+// use Northrook\Dot;
 
-final class SettingsMap extends Dot
+final class SettingsMap
 {
-    public function __construct( array $map = [] )
-    {
-        parent::__construct( $map, true );
-    }
+    public function __construct(
+        // array $map = [],
+    ) {}
 }

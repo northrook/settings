@@ -5,24 +5,27 @@ declare(strict_types=1);
 namespace Core;
 
 use _Dev\Attribute\Experimental;
+use Core\Interface\SettingsInterface;
+use Core\Settings\Setting;
 use Core\Exception\NotSupportedException;
-use Core\Interface\SettingsProviderInterface;
-use Core\Settings\{Setting};
 use SplFileInfo;
 use function Support\{is_path};
 
 #[Experimental]
-final class SettingsProvider implements SettingsProviderInterface
+final class SettingsProvider implements SettingsInterface
 {
     // private ?string $hash = null;
 
-    protected readonly ?string $filePath;
+    /** @var array<string, null|array<array-key, scalar>|scalar> */
+    private readonly array $defaults;
 
     /** @var array<string, null|array<array-key, scalar>|scalar> */
     protected array $map = [];
 
     /** @var array<string, Setting> */
     protected array $settings = [];
+
+    protected readonly ?string $filePath;
 
     /**
      * @param null|string                                         $filePath
@@ -32,12 +35,13 @@ final class SettingsProvider implements SettingsProviderInterface
      */
     public function __construct(
         ?string                 $filePath = null,
-        private readonly array  $defaults = [],
+        array                   $defaults = [],
         protected readonly bool $assignMissingDefaults = false,
         protected readonly bool $allowSettingsReset = false,
     ) {
-        $this->setDirectory( $filePath );
-        $this->map = $this->defaults;
+        $this->filePath = $this->parseCachePath( $filePath );
+        $this->defaults = $defaults;
+        $this->map      = $this->defaults;
     }
 
     public function has( string $setting ) : bool
@@ -69,7 +73,7 @@ final class SettingsProvider implements SettingsProviderInterface
         \assert( $this->validateKey( $setting ) );
         $this->map[$setting] = $set;
 
-        $method = __METHOD__;
+        // $method = __METHOD__;
         // dump( \get_defined_vars() );
 
         return $this;
@@ -110,10 +114,10 @@ final class SettingsProvider implements SettingsProviderInterface
         throw new NotSupportedException( __METHOD__.' not implemented yet.' );
     }
 
-    private function setDirectory( ?string $filePath ) : void
+    private function parseCachePath( ?string $filePath ) : ?string
     {
-        if ( $filePath === null ) {
-            return;
+        if ( ! $filePath ) {
+            return null;
         }
 
         \assert(
@@ -133,7 +137,7 @@ final class SettingsProvider implements SettingsProviderInterface
             $filePath = $path->getRealPath() ?: $path->getPathname();
         }
 
-        $this->filePath = $filePath;
+        return $filePath;
     }
 
     private function validateKey( string $key ) : bool
