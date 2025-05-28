@@ -53,9 +53,9 @@ final class SettingsProvider implements SettingsInterface
     }
 
     public function get(
-        string                           $setting,
-        float|array|bool|int|string|null $default,
-    ) : null|array|bool|float|int|string {
+        string $setting,
+        mixed  $default,
+    ) : mixed {
         \assert( $this->validateKey( $setting ) );
 
         if ( \array_key_exists( $setting, $this->map ) ) {
