@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Core;
 
 use _Dev\Attribute\Experimental;
-use Core\Interface\SettingsInterface;
+use Core\Contracts\Container\Parameter;
+use Core\Contracts\SettingsInterface;
 use Core\Settings\Setting;
 use Core\Exception\NotSupportedException;
 use SplFileInfo;
+use InvalidArgumentException;
 use function Support\{is_path};
 
 #[Experimental]
@@ -44,34 +46,49 @@ final class SettingsProvider implements SettingsInterface
         $this->map      = $this->defaults;
     }
 
-    public function has( string $setting ) : bool
+    public function has( string $parameter ) : bool
     {
-        \assert( $this->validateKey( $setting ) );
-        return \array_key_exists( $setting, $this->map )
-               || \array_key_exists( $setting, $this->settings )
-               || \array_key_exists( $setting, $this->defaults );
+        \assert( $this->validateKey( $parameter ) );
+        return \array_key_exists( $parameter, $this->map )
+               || \array_key_exists( $parameter, $this->settings )
+               || \array_key_exists( $parameter, $this->defaults );
     }
 
+    /**
+     * @param string                               $parameter
+     * @param null|array<array-key, scalar>|scalar $default
+     *
+     * @return Parameter
+     */
     public function get(
-        string $setting,
+        string $parameter,
         mixed  $default,
-    ) : mixed {
-        \assert( $this->validateKey( $setting ) );
+    ) : Parameter {
+        \assert( $this->validateKey( $parameter ) );
 
-        if ( \array_key_exists( $setting, $this->map ) ) {
-            return $this->map[$setting];
+        if ( \array_key_exists( $parameter, $this->map ) ) {
+            return Parameter::from( $this->map[$parameter] );
         }
 
         if ( $this->assignMissingDefaults ) {
-            return $this->map[$setting] = $default;
+            if ( \is_scalar( $default ) || \is_array( $default ) ) {
+                return Parameter::from( $this->map[$parameter] = $default );
+            }
+            throw new InvalidArgumentException( "Parameter {$parameter} must be a scalar or null" );
         }
-        return $default;
+        return Parameter::from( $default );
     }
 
-    public function set( string $setting, mixed $set ) : self
+    /**
+     * @param string                               $parameter
+     * @param null|array<array-key, scalar>|scalar $setting
+     *
+     * @return self
+     */
+    public function set( string $parameter, mixed $setting ) : self
     {
-        \assert( $this->validateKey( $setting ) );
-        $this->map[$setting] = $set;
+        \assert( $this->validateKey( $parameter ) );
+        $this->map[$parameter] = $setting;
 
         // $method = __METHOD__;
         // dump( \get_defined_vars() );
@@ -79,14 +96,17 @@ final class SettingsProvider implements SettingsInterface
         return $this;
     }
 
-    public function add( string $setting, mixed $add ) : self
+    /**
+     * @param string                               $parameter
+     * @param null|array<array-key, scalar>|scalar $setting
+     *
+     * @return self
+     */
+    public function add( string $parameter, mixed $setting ) : self
     {
-        \assert( $this->validateKey( $setting ) );
+        \assert( $this->validateKey( $parameter ) );
 
-        $this->map[$setting] ??= $add;
-
-        $method = __METHOD__;
-        dump( \get_defined_vars() );
+        $this->map[$parameter] ??= $setting;
 
         return $this;
     }
